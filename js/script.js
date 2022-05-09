@@ -1,4 +1,8 @@
 function showMenu(){
+    const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+    if(checkboxes.length > 0 && !confirm("Сбросить заказ?")) {
+        return;
+    }
     const rawMenu = document.getElementById('raw_menu_text').value;
     const menu = document.getElementById('menu');
 
