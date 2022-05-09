@@ -57,6 +57,7 @@ function showMenu(){
 
         var submit = document.createElement("input");
         submit.type = "submit";
+        submit.id = "copy_order";
         submit.onclick = copyOrderToClipboard;
         submit.value = "Скопировать заказ в буфер обмена";
         menu.appendChild(document.createElement("br"));
@@ -96,7 +97,20 @@ function copyOrderToClipboard(){
     console.log(text);
     navigator.clipboard.writeText(text).then(function() {
       console.log('Async: Copying to clipboard was successful!');
+      notifyCopy('Заказ скопирован');
     }, function(err) {
       console.error('Async: Could not copy text: ', err);
+      notifyCopy(err);
     });
+}
+
+function notifyCopy(msg){
+    const btn = document.getElementById('copy_order');
+    const tmp = btn.value;
+    btn.disabled = true;
+    btn.value = msg;
+    setTimeout(() => {
+        btn.value = tmp;
+        btn.disabled = false;
+    }, "1000")
 }
