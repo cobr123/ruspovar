@@ -1,9 +1,30 @@
-function showMenu(){
+async function showMenu(){
+    let rawMenu = document.getElementById('raw_menu_text').value;
+    if(rawMenu === null || rawMenu.trim() === '') {
+        try {
+            const permission = await navigator.permissions.query({name: 'clipboard-read'});
+            if (permission.state === 'denied') {
+                throw new Error('Not allowed to read clipboard.');
+            }
+            const clipboardContents = await navigator.clipboard.read();
+            for (const item of clipboardContents) {
+                if (!item.types.includes('text/plain')) {
+                    throw new Error('Clipboard contains non-text data: ' + item.types);
+                }
+                const blob = await item.getType('text/plain');
+                rawMenu = await blob.text();
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+    if(rawMenu === null || rawMenu.trim() === '') {
+        return;
+    }
     const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
     if(checkboxes.length > 0 && !confirm("Сбросить заказ?")) {
         return;
     }
-    const rawMenu = document.getElementById('raw_menu_text').value;
     const menu = document.getElementById('menu');
 
     const arr = rawMenu.split('\n')
