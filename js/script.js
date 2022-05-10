@@ -26,34 +26,26 @@ async function showMenu() {
     }
 
     for (let i = 0; i < arr.length; i++) {
+        const cdId = 'item_' + i;
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = cdId;
+
+        const label = document.createElement("label");
+        label.innerText = arr[i];
+        label.id = 'label_' + cdId;
+
         if (arr[i].includes("рсд")) {
-            const cdId = 'item_' + i;
-            const cb = document.createElement("input");
-            cb.type = "checkbox";
             cb.onclick = updateTotal;
-            cb.id = cdId;
 
-            const label = document.createElement("label");
             label.setAttribute("for", cdId);
-            label.innerText = arr[i];
             label.onclick = updateTotal;
-            label.id = 'label_' + cdId;
-
-            menu.appendChild(cb);
-            menu.appendChild(label);
-            menu.appendChild(document.createElement("br"));
         } else {
-            const fillerLabel = document.createElement("label");
-            fillerLabel.innerText = arr[i];
-
-            const fillerCb = document.createElement("input");
-            fillerCb.type = "checkbox";
-            fillerCb.disabled = true;
-
-            menu.appendChild(fillerCb);
-            menu.appendChild(fillerLabel);
-            menu.appendChild(document.createElement("br"));
+            cb.disabled = true;
         }
+        menu.appendChild(cb);
+        menu.appendChild(label);
+        menu.appendChild(document.createElement("br"));
     }
     if (arr.length > 0) {
         const total = document.createElement("label");
@@ -107,6 +99,21 @@ function updateTotal() {
 
     for (let i = 0; i < checkboxes.length; i++) {
         const cbLabel = document.getElementById('label_' + checkboxes[i].id);
+
+        if (!cbLabel.innerText.match(/^\d+\..*$/)) {
+            const idx = parseInt(checkboxes[i].id.match(/item_(\d+)/)[1]);
+            for (let k = idx - 1; k >= 0; k--) {
+                const disabledCbLabel = document.getElementById('label_item_' + k);
+                if (disabledCbLabel.innerText.match(/^\d+\.[^:]*:$/)) {
+                    const disabledLabel = document.createElement("label");
+                    disabledLabel.innerText = disabledCbLabel.innerText;
+
+                    order.appendChild(disabledLabel);
+                    order.appendChild(document.createElement("br"));
+                    break;
+                }
+            }
+        }
 
         const label = document.createElement("label");
         label.innerText = cbLabel.innerText;
