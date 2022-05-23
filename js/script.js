@@ -25,27 +25,18 @@ async function showMenu() {
         order.removeChild(order.lastChild);
     }
 
+    let idx = 0;
     for (let i = 0; i < arr.length; i++) {
-        const cdId = 'item_' + i;
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.id = cdId;
-
-        const label = document.createElement("label");
-        label.innerText = arr[i];
-        label.id = 'label_' + cdId;
-
-        if (arr[i].includes("рсд")) {
-            cb.onclick = updateTotal;
-
-            label.setAttribute("for", cdId);
-            label.onclick = updateTotal;
+        const text = arr[i];
+        const varianceIdx = findVariance(text);
+        if (varianceIdx >= 0) {
+            addMenuItem(idx, text.replace(variances[varianceIdx][0], variances[varianceIdx][1]), menu);
+            idx += 1;
+            addMenuItem(idx, text.replace(variances[varianceIdx][0], variances[varianceIdx][2]), menu);
         } else {
-            cb.disabled = true;
+            addMenuItem(idx, text, menu);
         }
-        menu.appendChild(cb);
-        menu.appendChild(label);
-        menu.appendChild(document.createElement("br"));
+        idx += 1;
     }
     if (arr.length > 0) {
         const total = document.createElement("label");
@@ -66,6 +57,47 @@ async function showMenu() {
         menu.appendChild(submit);
         menu.appendChild(document.createElement("br"));
     }
+}
+
+const variances = [
+    ["(можно без мяса)", "(без мяса)", "(с мясом)"],
+    [" св/гов ", " св ", " гов "],
+    [" кур/тел ", " кур ", " тел "],
+    [" карт/грибы ", " карт ", " грибы "],
+    [" гов/карт ", " гов ", " карт "],
+    ["(суп для тех кто не ест мясо, курицу добавлю по желанию в порцию для тех, кто ест мясо)", "(без мяса)", "(с мясом)"]
+];
+
+function findVariance(text) {
+    for (let i = 0; i < variances.length; i++) {
+        if (text.indexOf(variances[i][0]) >= 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function addMenuItem(idx, text, menu) {
+    const cdId = 'item_' + idx;
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.id = cdId;
+
+    const label = document.createElement("label");
+    label.innerText = text;
+    label.id = 'label_' + cdId;
+
+    if (text.includes("рсд")) {
+        cb.onclick = updateTotal;
+
+        label.setAttribute("for", cdId);
+        label.onclick = updateTotal;
+    } else {
+        cb.disabled = true;
+    }
+    menu.appendChild(cb);
+    menu.appendChild(label);
+    menu.appendChild(document.createElement("br"));
 }
 
 async function getTextFromClipboard() {
