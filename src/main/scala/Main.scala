@@ -22,6 +22,19 @@ object Main {
       }
   }
 
+  @JSExportTopLevel("showPlusMinus")
+  def showPlusMinus(): Unit = {
+    val moreThenOneQtyExists = menu.exists {
+      case e: EdibleMenuItem if e.quantity > 1 => true
+      case _ => false
+    }
+    if (moreThenOneQtyExists && !getShowPlusMinus() && !window.confirm("Сбросить количество до 1?")) {
+      return
+    }
+    renderMenu()
+    updateTotal()
+  }
+
   var menu: Array[MenuItem] = Array.empty
 
   def showMenu(text: String): Unit = {
@@ -38,6 +51,8 @@ object Main {
     }
   }
 
+  def getShowPlusMinus(): Boolean = document.querySelectorAll("input[type=checkbox][id='show_plus_minus']:checked").nonEmpty
+
   def renderMenu(): Unit = {
     val menuNode = document.getElementById("menu")
     while (menuNode.hasChildNodes()) {
@@ -48,7 +63,7 @@ object Main {
       orderNode.removeChild(orderNode.lastChild)
     }
 
-    val showPlusMinus = document.querySelectorAll("input[type=checkbox][id='show_plus_minus']:checked").nonEmpty
+    val showPlusMinus = getShowPlusMinus()
     menu.foreach { item =>
       renderMenuItem(menuNode, item, showPlusMinus)
     }
@@ -109,8 +124,12 @@ object Main {
     label.innerText = item.line
 
     item match {
-      case _: EdibleMenuItem =>
-        inputQty.setAttribute("value", "0")
+      case it: EdibleMenuItem =>
+        inputQty.setAttribute("value", s"${it.quantity}")
+        if (!showPlusMinus && it.quantity > 0) {
+          cb.setAttribute("checked", "true")
+          it.quantity = 1
+        }
       case _: SubTitleMenuItem =>
         inputQty.setAttribute("value", "")
         btnMenus.setAttribute("disabled", "true")
