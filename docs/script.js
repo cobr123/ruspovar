@@ -25,14 +25,9 @@ async function getTextFromClipboard() {
 
 function copyOrderToClipboard() {
     const order = document.getElementById('order');
-    const text = order.innerHTML;
+    const text = order.innerText;
     console.log(text);
-
-    const type = "text/html";
-    const blob = new Blob([text], { type });
-    const data = [new ClipboardItem({ [type]: blob })];
-
-    navigator.clipboard.write(data).then(function () {
+    navigator.clipboard.writeText(text).then(function () {
         console.log('Async: Copying to clipboard was successful!');
         notifyCopy('Заказ скопирован');
     }, function (err) {
