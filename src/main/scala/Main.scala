@@ -197,7 +197,7 @@ object Main {
           }
 
           if (quantity > 1) {
-            label.innerText = s"$quantity x $line"
+            label.innerHTML = s"<b>$quantity x</b> $line"
           } else {
             label.innerText = line
           }
