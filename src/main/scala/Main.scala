@@ -31,8 +31,12 @@ object Main {
     if (moreThenOneQtyExists && !getShowPlusMinus() && !window.confirm("Сбросить количество до 1?")) {
       return
     }
-    renderMenu()
-    updateTotal()
+    if (menu.nonEmpty) {
+      renderMenu()
+      updateTotal()
+    } else {
+      showMenu()
+    }
   }
 
   var menu: Array[MenuItem] = Array.empty
