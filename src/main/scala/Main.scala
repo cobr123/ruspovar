@@ -78,18 +78,20 @@ object Main {
   }
 
   def renderMenuItem(menuNode: Element, item: MenuItem, showPlusMinus: Boolean): Unit = {
-    val inputQty = document.createElement("input")
-    inputQty.setAttribute("size", "2")
-    inputQty.setAttribute("disabled", "true")
+    val inputStyle = "padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; margin: 5px;"
+
+    val qtyLabel = document.createElement("label")
+    qtyLabel.setAttribute("style", "background-color: #e2e2e2; " + inputStyle)
 
     val btnMenus = document.createElement("input")
     btnMenus.setAttribute("type", "button")
     btnMenus.setAttribute("value", "-")
+    btnMenus.setAttribute("style", inputStyle)
     btnMenus.addEventListener("click", { (e: dom.MouseEvent) =>
       item match {
         case it: EdibleMenuItem if it.quantity > 0 =>
           it.quantity -= 1
-          inputQty.setAttribute("value", s"${it.quantity}")
+          qtyLabel.innerText = s"${it.quantity}"
           updateTotal()
         case _ =>
       }
@@ -98,11 +100,12 @@ object Main {
     val btnPlus = document.createElement("input")
     btnPlus.setAttribute("type", "button")
     btnPlus.setAttribute("value", "+")
+    btnPlus.setAttribute("style", inputStyle)
     btnPlus.addEventListener("click", { (e: dom.MouseEvent) =>
       item match {
         case it: EdibleMenuItem =>
           it.quantity += 1
-          inputQty.setAttribute("value", s"${it.quantity}")
+          qtyLabel.innerText = s"${it.quantity}"
           updateTotal()
         case _ =>
       }
@@ -129,13 +132,13 @@ object Main {
 
     item match {
       case it: EdibleMenuItem =>
-        inputQty.setAttribute("value", s"${it.quantity}")
+        qtyLabel.innerText = s"${it.quantity}"
         if (!showPlusMinus && it.quantity > 0) {
           cb.setAttribute("checked", "true")
           it.quantity = 1
         }
       case _: SubTitleMenuItem =>
-        inputQty.setAttribute("value", "")
+        qtyLabel.innerHTML = "&nbsp;&nbsp;"
         btnMenus.setAttribute("disabled", "true")
         btnPlus.setAttribute("disabled", "true")
         cb.setAttribute("disabled", "true")
@@ -143,7 +146,7 @@ object Main {
 
     if (showPlusMinus) {
       menuNode.appendChild(btnMenus)
-      menuNode.appendChild(inputQty)
+      menuNode.appendChild(qtyLabel)
       menuNode.appendChild(btnPlus)
     } else {
       menuNode.appendChild(cb)
