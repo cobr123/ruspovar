@@ -139,8 +139,8 @@ object Main {
 
     if (showPlusMinus) {
       menuNode.appendChild(btnMenus)
-      menuNode.appendChild(btnPlus)
       menuNode.appendChild(inputQty)
+      menuNode.appendChild(btnPlus)
     } else {
       menuNode.appendChild(cb)
       label.setAttribute("for", cb.id)
