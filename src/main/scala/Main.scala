@@ -11,7 +11,7 @@ object Main {
 
   @JSExportTopLevel("showMenu")
   def showMenu(): Unit = {
-    Option(document.getElementById("raw_menu_text").textContent)
+    Option(getRawMenuText())
       .map(_.trim)
       .filter(_.nonEmpty)
       .map(showMenu)
@@ -215,6 +215,10 @@ object Main {
   @js.native
   @JSGlobal("copyOrderToClipboard")
   def copyOrderToClipboard(): Unit = js.native
+
+  @js.native
+  @JSGlobal("getRawMenuText")
+  def getRawMenuText(): String = js.native
 
   @js.native
   @JSGlobal("getTextFromClipboard")

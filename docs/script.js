@@ -1,3 +1,6 @@
+function getRawMenuText() {
+    return document.getElementById('raw_menu_text').value;
+}
 
 async function getTextFromClipboard() {
     let text = '';
