@@ -7,7 +7,16 @@ import scala.scalajs.js.Promise
 import scala.scalajs.js.annotation.{JSExportTopLevel, JSGlobal}
 
 object Main {
-  def main(args: Array[String]): Unit = {}
+  def main(args: Array[String]): Unit = {
+    document.addEventListener("DOMContentLoaded", { (_: dom.Event) =>
+      document.getElementById("show_plus_minus")
+        .addEventListener("click", { (e: dom.MouseEvent) =>
+          if (!showPlusMinus()) {
+            e.preventDefault()
+          }
+        })
+    })
+  }
 
   @JSExportTopLevel("showMenu")
   def showMenu(): Unit = {
@@ -22,14 +31,13 @@ object Main {
       }
   }
 
-  @JSExportTopLevel("showPlusMinus")
-  def showPlusMinus(): Unit = {
+  def showPlusMinus(): Boolean = {
     val moreThenOneQtyExists = menu.exists {
       case e: EdibleMenuItem if e.quantity > 1 => true
       case _ => false
     }
     if (moreThenOneQtyExists && !getShowPlusMinus() && !window.confirm("Сбросить количество до 1?")) {
-      return
+      return false
     }
     if (menu.nonEmpty) {
       renderMenu()
@@ -37,6 +45,7 @@ object Main {
     } else {
       showMenu()
     }
+    true
   }
 
   var menu: Array[MenuItem] = Array.empty
