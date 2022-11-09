@@ -11,7 +11,7 @@ object Main {
     document.addEventListener("DOMContentLoaded", { (_: dom.Event) =>
       document.getElementById("show_plus_minus")
         .addEventListener("click", { (e: dom.MouseEvent) =>
-          if (!showPlusMinus()) {
+          if (!togglePlusMinus()) {
             e.preventDefault()
           }
         })
@@ -31,17 +31,17 @@ object Main {
       }
   }
 
-  def showPlusMinus(): Boolean = {
+  def togglePlusMinus(): Boolean = {
     val moreThenOneQtyExists = menu.exists {
       case e: EdibleMenuItem if e.quantity > 1 => true
       case _ => false
     }
-    if (moreThenOneQtyExists && !getShowPlusMinus() && !window.confirm("Сбросить количество до 1?")) {
+    val showPlusMinus = getShowPlusMinus()
+    if (moreThenOneQtyExists && !showPlusMinus && !window.confirm("Сбросить количество до 1?")) {
       return false
     }
     if (menu.nonEmpty) {
-      renderMenu()
-      updateTotal()
+      renderMenu(showPlusMinus)
     } else {
       showMenu()
     }
@@ -60,13 +60,17 @@ object Main {
         return
       }
       menu = Menu.parse(text)
-      renderMenu()
+      val showPlusMinus = menu.exists {
+        case e: EdibleMenuItem if e.quantity > 1 => true
+        case _ => false
+      }
+      renderMenu(showPlusMinus || getShowPlusMinus())
     }
   }
 
   def getShowPlusMinus(): Boolean = document.querySelectorAll("input[type=checkbox][id='show_plus_minus']:checked").nonEmpty
 
-  def renderMenu(): Unit = {
+  def renderMenu(showPlusMinus: Boolean): Unit = {
     val menuNode = document.getElementById("menu")
     while (menuNode.hasChildNodes()) {
       menuNode.removeChild(menuNode.lastChild)
@@ -76,13 +80,19 @@ object Main {
       orderNode.removeChild(orderNode.lastChild)
     }
 
-    val showPlusMinus = getShowPlusMinus()
     menu.foreach { item =>
       renderMenuItem(menuNode, item, showPlusMinus)
     }
 
     if (menu.nonEmpty) {
       renderTotal(menuNode)
+    }
+    val qtyExists = menu.exists {
+      case e: EdibleMenuItem if e.quantity > 0 => true
+      case _ => false
+    }
+    if (qtyExists) {
+      updateTotal()
     }
   }
 
@@ -92,11 +102,11 @@ object Main {
     val qtyLabel = document.createElement("label")
     qtyLabel.setAttribute("style", "background-color: #e2e2e2; " + inputStyle)
 
-    val btnMenus = document.createElement("input")
-    btnMenus.setAttribute("type", "button")
-    btnMenus.setAttribute("value", "-")
-    btnMenus.setAttribute("style", inputStyle)
-    btnMenus.addEventListener("click", { (e: dom.MouseEvent) =>
+    val btnMinus = document.createElement("input")
+    btnMinus.setAttribute("type", "button")
+    btnMinus.setAttribute("value", "-")
+    btnMinus.setAttribute("style", inputStyle)
+    btnMinus.addEventListener("click", { (_: dom.MouseEvent) =>
       item match {
         case it: EdibleMenuItem if it.quantity > 0 =>
           it.quantity -= 1
@@ -110,7 +120,7 @@ object Main {
     btnPlus.setAttribute("type", "button")
     btnPlus.setAttribute("value", "+")
     btnPlus.setAttribute("style", inputStyle)
-    btnPlus.addEventListener("click", { (e: dom.MouseEvent) =>
+    btnPlus.addEventListener("click", { (_: dom.MouseEvent) =>
       item match {
         case it: EdibleMenuItem =>
           it.quantity += 1
@@ -123,7 +133,7 @@ object Main {
     val cb = document.createElement("input")
     cb.setAttribute("type", "checkbox")
     cb.id = s"cb_${menuNode.childNodes.length}"
-    cb.addEventListener("change", { (e: dom.MouseEvent) =>
+    cb.addEventListener("change", { (_: dom.MouseEvent) =>
       item match {
         case it: EdibleMenuItem =>
           if (it.quantity > 0) {
@@ -148,13 +158,13 @@ object Main {
         }
       case _: SubTitleMenuItem =>
         qtyLabel.innerHTML = "&nbsp;&nbsp;"
-        btnMenus.setAttribute("disabled", "true")
+        btnMinus.setAttribute("disabled", "true")
         btnPlus.setAttribute("disabled", "true")
         cb.setAttribute("disabled", "true")
     }
 
     if (showPlusMinus) {
-      menuNode.appendChild(btnMenus)
+      menuNode.appendChild(btnMinus)
       menuNode.appendChild(qtyLabel)
       menuNode.appendChild(btnPlus)
     } else {
@@ -192,7 +202,7 @@ object Main {
     while (orderNode.hasChildNodes()) {
       orderNode.removeChild(orderNode.lastChild)
     }
-    var sum = BigDecimal.valueOf(0)
+    var sum = 0
 
     menu.filter {
       case e: EdibleMenuItem if e.quantity > 0 => true

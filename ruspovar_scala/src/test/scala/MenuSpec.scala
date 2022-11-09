@@ -6,14 +6,14 @@ class MenuSpec extends AnyFunSpec {
   it("parse menu") {
     val expected = Array(
       SubTitleMenuItem("К заказу на понедельник:"),
-      EdibleMenuItem("Овощная нарезка - 120 рсд", None, 0, BigDecimal.valueOf(120)),
-      EdibleMenuItem("Капустный с огурцом - 140 рсд", None, 0, BigDecimal.valueOf(140)),
+      EdibleMenuItem("Овощная нарезка - 120 рсд", None, 0, 120),
+      EdibleMenuItem("Капустный с огурцом - 140 рсд", None, 0, 140),
       SubTitleMenuItem("Гарнир:"),
-      EdibleMenuItem("гречка - 130 рсд", Some("Гарнир:"), 0, BigDecimal.valueOf(130)),
-      EdibleMenuItem("пюре - 130 рсд", Some("Гарнир:"), 0, BigDecimal.valueOf(130)),
-      EdibleMenuItem("Вареники картошка 12 шт - 250  рсд", None, 0, BigDecimal.valueOf(250)),
+      EdibleMenuItem("гречка - 130 рсд", Some("Гарнир:"), 0, 130),
+      EdibleMenuItem("пюре - 130 рсд", Some("Гарнир:"), 0, 130),
+      EdibleMenuItem("Вареники картошка 12 шт - 250  рсд", None, 0, 250),
       SubTitleMenuItem("Десерт:"),
-      EdibleMenuItem("сырники - 190 рсд", Some("Десерт:"), 0, BigDecimal.valueOf(190)),
+      EdibleMenuItem("сырники - 190 рсд", Some("Десерт:"), 0, 190),
     )
     val text =
       """К заказу на понедельник:
@@ -38,7 +38,7 @@ class MenuSpec extends AnyFunSpec {
   it("parse subTitle") {
     val expected = Array(
       SubTitleMenuItem("Десерт:"),
-      EdibleMenuItem("сырники - 190 рсд", Some("Десерт:"), 0, BigDecimal.valueOf(190)),
+      EdibleMenuItem("сырники - 190 рсд", Some("Десерт:"), 0, 190),
     )
     val text =
       """
@@ -49,4 +49,22 @@ class MenuSpec extends AnyFunSpec {
     assert(items === expected)
   }
 
+  it("parse order") {
+    val expected = Array(
+      EdibleMenuItem("Капустный с огурцом - 140 рсд", None, 1, 140),
+      SubTitleMenuItem("Гарнир:"),
+      EdibleMenuItem("гречка - 130 рсд", Some("Гарнир:"), 1, 130),
+      SubTitleMenuItem("Десерт:"),
+      EdibleMenuItem("сырники - 190 рсд", Some("Десерт:"), 2, 190),
+    )
+    val text =
+      """Капустный с огурцом - 140 рсд
+        |Гарнир:
+        |гречка - 130 рсд
+        |Десерт:
+        |2 x сырники - 190 рсд""".stripMargin
+
+    val items = Menu.parse(text)
+    assert(items === expected)
+  }
 }
