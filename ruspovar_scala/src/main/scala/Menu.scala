@@ -16,7 +16,7 @@ object Menu {
     }
   }
 
-  val priceRegExp: Regex = """\s+(\d+)\s+рсд""".r
+  val priceRegExp: Regex = """\s*(\d+)\s*рсд""".r
 
   private def parseMenu(lines: Array[String]): Array[MenuItem] = {
     var subTitle = ""

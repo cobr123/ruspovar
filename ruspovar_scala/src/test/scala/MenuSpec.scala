@@ -6,11 +6,11 @@ class MenuSpec extends AnyFunSpec {
   it("parse menu") {
     val expected = Array(
       SubTitleMenuItem("К заказу на понедельник:"),
-      EdibleMenuItem("Овощная нарезка - 120 рсд", None, 0, 120),
-      EdibleMenuItem("Капустный с огурцом - 140 рсд", None, 0, 140),
+      EdibleMenuItem("Овощная нарезка120 рсд", None, 0, 120),
+      EdibleMenuItem("Капустный с огурцом - 140рсд", None, 0, 140),
       SubTitleMenuItem("Гарнир:"),
       EdibleMenuItem("гречка - 130 рсд", Some("Гарнир:"), 0, 130),
-      EdibleMenuItem("пюре - 130 рсд", Some("Гарнир:"), 0, 130),
+      EdibleMenuItem("пюре - 150рсд", Some("Гарнир:"), 0, 150),
       EdibleMenuItem("Вареники картошка 12 шт - 250  рсд", None, 0, 250),
       SubTitleMenuItem("Десерт:"),
       EdibleMenuItem("сырники - 190 рсд", Some("Десерт:"), 0, 190),
@@ -18,13 +18,13 @@ class MenuSpec extends AnyFunSpec {
     val text =
       """К заказу на понедельник:
         |
-        |1. Овощная нарезка - 120 рсд
+        |1. Овощная нарезка120 рсд
         |
-        |2. Капустный с огурцом - 140 рсд
+        |2. Капустный с огурцом - 140рсд
         |
         |5. Гарнир:
         |гречка - 130 рсд
-        |пюре - 130 рсд
+        |пюре - 150рсд
         |
         |9. Вареники картошка 12 шт - 250  рсд
         |
